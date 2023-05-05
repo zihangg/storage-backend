@@ -35,7 +35,6 @@ public class LocationController extends BaseController {
 
     @PostMapping
     public ResponseEntity<LocationCreatedResponse> createLocation(@Valid @RequestBody LocationCreateDto createLocationDto) {
-        System.out.println(createLocationDto.toString());
         LocationCreatedResponse response = locationService.createLocation(createLocationDto);
         return ResponseEntity.ok().body(response);
     }
