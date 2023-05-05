@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class CreateLocationDto {
+public class LocationCreateDto {
     @NotEmpty(message = "Name cannot be null or empty")
     private String code;
     private BigDecimal width;

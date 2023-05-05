@@ -6,15 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import zh.backend.dtos.AssetReceiveDto;
-import zh.backend.dtos.CreateAssetDto;
+import zh.backend.dtos.AssetCreateDto;
 import zh.backend.entities.AssetEntity;
 import zh.backend.responses.AssetCreatedResponse;
 import zh.backend.responses.AssetReceivedResponse;
 import zh.backend.services.AssetService;
 import zh.backend.utils.paging.Page;
 import zh.backend.utils.paging.PageRequest;
-
-import java.util.List;
 
 @RestController
 @Validated
@@ -38,7 +36,7 @@ public class AssetController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<AssetCreatedResponse> createAsset(@Valid @RequestBody CreateAssetDto createAssetDto) {
+    public ResponseEntity<AssetCreatedResponse> createAsset(@Valid @RequestBody AssetCreateDto createAssetDto) {
         AssetCreatedResponse assetCreatedResponse = assetService.createAsset(createAssetDto);
         return ResponseEntity.ok().body(assetCreatedResponse);
     }

@@ -1,7 +1,7 @@
 package zh.backend.services;
 
 import org.springframework.stereotype.Service;
-import zh.backend.dtos.CreateLocationDto;
+import zh.backend.dtos.LocationCreateDto;
 import zh.backend.entities.LocationEntity;
 import zh.backend.repositories.LocationRepository;
 import zh.backend.responses.LocationCreatedResponse;
@@ -22,7 +22,7 @@ public class LocationService implements Pageable<LocationEntity> {
         this.locationRepository = locationRepository;
     }
 
-    public LocationCreatedResponse createLocation(CreateLocationDto createLocationDto) {
+    public LocationCreatedResponse createLocation(LocationCreateDto createLocationDto) {
         BigDecimal volume = createLocationDto.getHeight().multiply(createLocationDto.getLength()).multiply(createLocationDto.getWidth());
         LocationEntity location = new LocationEntity(
                 createLocationDto.getCode(),

@@ -2,7 +2,7 @@ package zh.backend.services;
 
 import org.springframework.stereotype.Service;
 import zh.backend.dtos.AssetReceiveDto;
-import zh.backend.dtos.CreateAssetDto;
+import zh.backend.dtos.AssetCreateDto;
 import zh.backend.entities.AssetEntity;
 import zh.backend.entities.AssetReceivedRecordEntity;
 import zh.backend.entities.BatchEntity;
@@ -41,7 +41,7 @@ public class AssetService implements Pageable<AssetEntity> {
         this.batchService = batchService;
     }
 
-    public AssetCreatedResponse createAsset(CreateAssetDto createAssetDto) {
+    public AssetCreatedResponse createAsset(AssetCreateDto createAssetDto) {
         AssetEntity assetEntity = new AssetEntity(
                 createAssetDto.getAssetCode(),
                 createAssetDto.getName(),

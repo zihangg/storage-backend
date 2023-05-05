@@ -8,7 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class CreateAssetDto {
+public class AssetCreateDto {
     @NotEmpty(message = "Code cannot be null or empty")
     private String assetCode;
     @NotEmpty(message = "Name cannot be null or empty")

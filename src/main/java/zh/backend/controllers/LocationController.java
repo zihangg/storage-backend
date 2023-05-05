@@ -2,11 +2,10 @@ package zh.backend.controllers;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import zh.backend.dtos.CreateLocationDto;
+import zh.backend.dtos.LocationCreateDto;
 import zh.backend.entities.LocationEntity;
 import zh.backend.responses.LocationCreatedResponse;
 import zh.backend.services.LocationService;
@@ -35,7 +34,7 @@ public class LocationController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<LocationCreatedResponse> createLocation(@Valid @RequestBody CreateLocationDto createLocationDto) {
+    public ResponseEntity<LocationCreatedResponse> createLocation(@Valid @RequestBody LocationCreateDto createLocationDto) {
         System.out.println(createLocationDto.toString());
         LocationCreatedResponse response = locationService.createLocation(createLocationDto);
         return ResponseEntity.ok().body(response);
