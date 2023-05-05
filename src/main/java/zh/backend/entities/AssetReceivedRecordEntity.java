@@ -2,10 +2,7 @@ package zh.backend.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "assetReceivedRecord")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AssetReceivedRecordEntity extends BaseEntity {
     private String assetCode;
     private String assetName;
@@ -27,4 +25,5 @@ public class AssetReceivedRecordEntity extends BaseEntity {
     private String batchId;
     private String batchNumber;
     private LocalDateTime date;
+    private BigDecimal volume;
 }

@@ -63,12 +63,16 @@ public class AssetService implements Pageable<AssetEntity> {
         BigDecimal totalCost = asset.getCost().multiply(assetReceiveDto.getQuantity());
         LocationEntity location = locationService.getLocationByCode(assetReceiveDto.getLocationCode());
         LocalDate expiry = LocalDate.parse(assetReceiveDto.getExpiry());
+        BigDecimal volume = assetReceiveDto.getHeight().multiply(assetReceiveDto.getLength()).multiply(assetReceiveDto.getWidth());
 
         //1.1 create batch
         BatchEntity batch = batchService.createBatch(assetReceiveDto.getAssetCode(), assetReceiveDto.getQuantity(), expiry);
 
         //1.2 current time;
         LocalDateTime now = LocalDateTime.now();
+
+        //1.3. update location space availability & reject if no volume available
+        locationService.useVolume(location.getId(), volume);
 
         //2. record the receiving of asset.
         AssetReceivedRecordEntity record = new AssetReceivedRecordEntity(
@@ -81,12 +85,15 @@ public class AssetService implements Pageable<AssetEntity> {
                 location.getCode(),
                 batch.getId(),
                 batch.getBatchNumber(),
-                now
+                now,
+                volume
         );
         recordReceiveAssets(record);
 
         //3. update balance of asset
         asset.setBalance(asset.getBalance().add(assetReceiveDto.getQuantity()));
+
+
 
 
         assetRepository.save(asset);

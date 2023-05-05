@@ -11,5 +11,8 @@ public class AssetReceiveDto {
     private BigDecimal quantity;
     private String locationCode;
     private String expiry;
+    private BigDecimal length;
+    private BigDecimal height;
+    private BigDecimal width;
 
 }

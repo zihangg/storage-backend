@@ -3,6 +3,7 @@ package zh.backend.services;
 import org.springframework.stereotype.Service;
 import zh.backend.dtos.LocationCreateDto;
 import zh.backend.entities.LocationEntity;
+import zh.backend.exceptions.LocationInsufficientVolumeException;
 import zh.backend.repositories.LocationRepository;
 import zh.backend.responses.LocationCreatedResponse;
 import zh.backend.utils.paging.Page;
@@ -12,6 +13,7 @@ import zh.backend.utils.paging.Pageable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class LocationService implements Pageable<LocationEntity> {
@@ -43,6 +45,17 @@ public class LocationService implements Pageable<LocationEntity> {
 
     public LocationEntity getLocationByCode(String locationCode) {
         return locationRepository.findByCode(locationCode);
+    }
+
+    public void useVolume(String locationId, BigDecimal volume) {
+        LocationEntity location = locationRepository.findById(locationId).orElseThrow(NoSuchElementException::new);
+
+        if (location.getAvailableVolume().compareTo(volume) < 0) {
+            throw new LocationInsufficientVolumeException();
+        }
+
+        location.setAvailableVolume(location.getAvailableVolume().subtract(volume));
+        locationRepository.save(location);
     }
 
     @Override
