@@ -1,6 +1,7 @@
 package zh.backend.services;
 
 import org.springframework.stereotype.Service;
+import zh.backend.dtos.AssetBoxDto;
 import zh.backend.dtos.AssetReceiveDto;
 import zh.backend.dtos.AssetCreateDto;
 import zh.backend.entities.AssetEntity;
@@ -60,40 +61,45 @@ public class AssetService implements Pageable<AssetEntity> {
         AssetEntity asset = assetRepository.findByAssetCode(assetReceiveDto.getAssetCode()).orElseThrow(NoSuchElementException::new);
 
         //1. get all information needed.
-        BigDecimal totalCost = asset.getCost().multiply(assetReceiveDto.getQuantity());
+        BigDecimal totalQuantity = assetReceiveDto.getBoxes().stream().map(AssetBoxDto::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalCost = asset.getCost().multiply(totalQuantity);
         LocationEntity location = locationService.getLocationByCode(assetReceiveDto.getLocationCode());
         LocalDate expiry = LocalDate.parse(assetReceiveDto.getExpiry());
-        BigDecimal volume = assetReceiveDto.getHeight().multiply(assetReceiveDto.getLength()).multiply(assetReceiveDto.getWidth());
+        BigDecimal totalVolume = assetReceiveDto.getBoxes().stream().map(AssetBoxDto::getVolume).reduce(BigDecimal.ZERO, BigDecimal::add);
+        Integer totalBoxes = assetReceiveDto.getBoxes().size();
 
         //1.1 create batch
-        BatchEntity batch = batchService.createBatch(assetReceiveDto.getAssetCode(), assetReceiveDto.getQuantity(), expiry);
+        BatchEntity batch = batchService.createBatch(
+                assetReceiveDto.getAssetCode(),
+                totalQuantity,
+                expiry,
+                assetReceiveDto.getBoxes(),
+                assetReceiveDto.getLocationCode()
+        );
 
         //1.2 current time;
         LocalDateTime now = LocalDateTime.now();
 
         //1.3. update location space availability & reject if no volume available
-        locationService.useVolume(location.getId(), volume);
+        locationService.useVolume(location.getId(), totalVolume);
 
         //2. record the receiving of asset.
         AssetReceivedRecordEntity record = new AssetReceivedRecordEntity(
                 asset.getAssetCode(),
                 asset.getName(),
-                assetReceiveDto.getQuantity(),
+                totalQuantity,
                 asset.getCost(),
                 totalCost,
-                location.getId(),
                 location.getCode(),
-                batch.getId(),
                 batch.getBatchNumber(),
                 now,
-                volume
+                totalBoxes
+
         );
         recordReceiveAssets(record);
 
         //3. update balance of asset
-        asset.setBalance(asset.getBalance().add(assetReceiveDto.getQuantity()));
-
-
+        asset.setBalance(asset.getBalance().add(totalQuantity));
 
 
         assetRepository.save(asset);
@@ -105,11 +111,10 @@ public class AssetService implements Pageable<AssetEntity> {
                 record.getAssetName(),
                 record.getQuantity(),
                 record.getTotalCost(),
-                record.getLocationId(),
                 record.getLocationCode(),
-                record.getBatchId(),
                 record.getBatchNumber(),
-                now
+                now,
+                record.getTotalBoxes()
         );
     }
 

@@ -20,10 +20,8 @@ public class AssetReceivedRecordEntity extends BaseEntity {
     private BigDecimal quantity;
     private BigDecimal costPerAsset;
     private BigDecimal totalCost;
-    private String locationId;
     private String locationCode;
-    private String batchId;
     private String batchNumber;
     private LocalDateTime date;
-    private BigDecimal volume;
+    private Integer totalBoxes;
 }

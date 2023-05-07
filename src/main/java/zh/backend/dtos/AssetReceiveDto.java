@@ -1,18 +1,22 @@
 package zh.backend.dtos;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class AssetReceiveDto {
+    @NotEmpty
     private String orderNumber;
+    @NotEmpty
     private String assetCode;
-    private BigDecimal quantity;
+    @NotEmpty
     private String locationCode;
+    @NotEmpty
     private String expiry;
-    private BigDecimal length;
-    private BigDecimal height;
-    private BigDecimal width;
+    @NotNull
+    private List<AssetBoxDto> boxes;
 
 }
