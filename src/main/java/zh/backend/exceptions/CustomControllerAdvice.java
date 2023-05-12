@@ -30,4 +30,26 @@ public class CustomControllerAdvice {
 
         return ResponseEntity.badRequest().body(err);
     }
+
+    @ExceptionHandler(BoxDoesNotExistException.class)
+    public ResponseEntity<CustomErrorResponse> handleBoxDoesNotExist(BoxDoesNotExistException e) {
+        e.printStackTrace();
+        CustomErrorResponse err = new CustomErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Box does not exist."
+        );
+
+        return ResponseEntity.badRequest().body(err);
+    }
+
+    @ExceptionHandler(IncorrectFromLocationException.class)
+    public ResponseEntity<CustomErrorResponse> handleIncorrectFromLocation(IncorrectFromLocationException e) {
+        e.printStackTrace();
+        CustomErrorResponse err = new CustomErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Box ID provided does not exist within location provided."
+        );
+
+        return ResponseEntity.badRequest().body(err);
+    }
 }

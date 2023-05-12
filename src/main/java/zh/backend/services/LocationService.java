@@ -63,6 +63,17 @@ public class LocationService implements Pageable<LocationEntity> {
         locationRepository.save(location);
     }
 
+    public void freeLocation(String locationId, BigDecimal volume) {
+        LocationEntity location = locationRepository.findById(locationId).orElseThrow(LocationDoesNotExistException::new);
+
+        location.setAvailableVolume(location.getAvailableVolume().add(volume));
+        if (location.getTotalVolume().compareTo(location.getAvailableVolume()) != 0) {
+            location.setAvailableVolume(location.getTotalVolume());
+        }
+
+        locationRepository.save(location);
+    }
+
     public LocationDetailsResponse getLocationDetails(String locationCode) {
         // 1. get location information
         LocationEntity location = locationRepository.findByCode(locationCode).orElseThrow(LocationDoesNotExistException::new);

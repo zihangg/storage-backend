@@ -3,12 +3,11 @@ package zh.backend.controllers;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import zh.backend.dtos.BoxTransferDto;
 import zh.backend.entities.BatchEntity;
 import zh.backend.entities.BoxEntity;
+import zh.backend.responses.GeneralActionResponse;
 import zh.backend.services.BoxService;
 import zh.backend.utils.paging.Page;
 import zh.backend.utils.paging.PageRequest;
@@ -30,5 +29,11 @@ public class BoxController extends BaseController {
         int totalCount = boxService.getTotalCount();
         Page<BoxEntity> batchList = boxService.getPage(pageRequest);
         return ResponseEntity.ok().header("X-Total-Count", String.valueOf(totalCount)).body(batchList);
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<GeneralActionResponse> transferBox(@RequestBody BoxTransferDto boxTransferDto) {
+        GeneralActionResponse response = boxService.transferBox(boxTransferDto);
+        return ResponseEntity.ok().body(response);
     }
 }
