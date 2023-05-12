@@ -1,5 +1,6 @@
 package zh.backend.exceptions;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -60,6 +61,22 @@ public class CustomControllerAdvice {
                 HttpStatus.BAD_REQUEST,
                 "Box ID provided does not exist within location provided."
         );
+
+        return ResponseEntity.badRequest().body(err);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<CustomErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        e.printStackTrace();
+
+        // handle unique_username
+        CustomErrorResponse err = null;
+        if (e.getMessage().contains("unique_username")) {
+            err = new CustomErrorResponse(
+                    HttpStatus.BAD_REQUEST,
+                    "Username already exists."
+            );
+        }
 
         return ResponseEntity.badRequest().body(err);
     }
