@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import zh.backend.dtos.LocationCreateDto;
 import zh.backend.entities.LocationEntity;
 import zh.backend.responses.LocationCreatedResponse;
+import zh.backend.responses.LocationDetailsResponse;
 import zh.backend.services.LocationService;
 import zh.backend.utils.paging.Page;
 import zh.backend.utils.paging.PageRequest;
@@ -36,6 +37,12 @@ public class LocationController extends BaseController {
     @PostMapping
     public ResponseEntity<LocationCreatedResponse> createLocation(@Valid @RequestBody LocationCreateDto createLocationDto) {
         LocationCreatedResponse response = locationService.createLocation(createLocationDto);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/detailed/{locationCode}")
+    public ResponseEntity<LocationDetailsResponse> getLocationDetailed(@PathVariable String locationCode) {
+        LocationDetailsResponse response = locationService.getLocationDetails(locationCode);
         return ResponseEntity.ok().body(response);
     }
 }

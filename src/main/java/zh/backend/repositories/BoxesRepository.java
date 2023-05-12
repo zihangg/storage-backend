@@ -10,4 +10,5 @@ public interface BoxesRepository extends JpaRepository<BoxEntity, String> {
 
     Optional<List<BoxEntity>> findByAssetCode(String assetCode);
 
+    Optional<List<BoxEntity>> findByLocationCode(String locationCode);
 }

@@ -1,28 +1,33 @@
 package zh.backend.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import zh.backend.dtos.LocationBoxesDto;
 import zh.backend.dtos.LocationCreateDto;
+import zh.backend.entities.BoxEntity;
 import zh.backend.entities.LocationEntity;
+import zh.backend.exceptions.LocationDoesNotExistException;
 import zh.backend.exceptions.LocationInsufficientVolumeException;
+import zh.backend.repositories.BoxesRepository;
 import zh.backend.repositories.LocationRepository;
 import zh.backend.responses.LocationCreatedResponse;
+import zh.backend.responses.LocationDetailsResponse;
 import zh.backend.utils.paging.Page;
 import zh.backend.utils.paging.PageRequest;
 import zh.backend.utils.paging.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
 public class LocationService implements Pageable<LocationEntity> {
 
     private final LocationRepository locationRepository;
 
-    public LocationService(LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
-    }
+    private final BoxesRepository boxesRepository;
 
     public LocationCreatedResponse createLocation(LocationCreateDto createLocationDto) {
         BigDecimal volume = createLocationDto.getHeight().multiply(createLocationDto.getLength()).multiply(createLocationDto.getWidth());
@@ -44,11 +49,11 @@ public class LocationService implements Pageable<LocationEntity> {
     }
 
     public LocationEntity getLocationByCode(String locationCode) {
-        return locationRepository.findByCode(locationCode);
+        return locationRepository.findByCode(locationCode).orElseThrow(LocationDoesNotExistException::new);
     }
 
     public void useVolume(String locationId, BigDecimal volume) {
-        LocationEntity location = locationRepository.findById(locationId).orElseThrow(NoSuchElementException::new);
+        LocationEntity location = locationRepository.findById(locationId).orElseThrow(LocationDoesNotExistException::new);
 
         if (location.getAvailableVolume().compareTo(volume) < 0) {
             throw new LocationInsufficientVolumeException();
@@ -56,6 +61,39 @@ public class LocationService implements Pageable<LocationEntity> {
 
         location.setAvailableVolume(location.getAvailableVolume().subtract(volume));
         locationRepository.save(location);
+    }
+
+    public LocationDetailsResponse getLocationDetails(String locationCode) {
+        // 1. get location information
+        LocationEntity location = locationRepository.findByCode(locationCode).orElseThrow(LocationDoesNotExistException::new);
+
+
+        // 2. get assets & their batch within location
+        List<BoxEntity> assets = boxesRepository.findByLocationCode(locationCode).orElse(new ArrayList<>());
+
+        List<LocationBoxesDto> boxes = new ArrayList<>();
+
+
+        // 2.1 filter required information
+        for (BoxEntity box : assets) {
+            LocationBoxesDto detailBox = new LocationBoxesDto(
+                    box.getBoxId(),
+                    box.getAssetCode(),
+                    box.getBatchNumber(),
+                    box.getQuantity(),
+                    box.getVolume()
+            );
+            boxes.add(detailBox);
+        }
+
+        // 3. return
+        return new LocationDetailsResponse(
+                location.getId(),
+                location.getCode(),
+                location.getTotalVolume(),
+                location.getAvailableVolume(),
+                boxes
+        );
     }
 
     @Override

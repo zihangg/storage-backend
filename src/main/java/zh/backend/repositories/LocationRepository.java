@@ -3,6 +3,8 @@ package zh.backend.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import zh.backend.entities.LocationEntity;
 
+import java.util.Optional;
+
 public interface LocationRepository extends JpaRepository<LocationEntity, String> {
-    public LocationEntity findByCode(String locationCode);
+     Optional<LocationEntity> findByCode(String locationCode);
 }
