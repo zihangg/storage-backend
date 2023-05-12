@@ -37,13 +37,8 @@ public class BatchController extends BaseController {
     // Batches can be searched either by batchId, or by assetCode.
     @GetMapping("/{batchNumber}")
     public ResponseEntity<BatchEntity> getBatchByBatchNumber(@PathVariable String batchNumber) {
-        Optional<BatchEntity> optionalBatch = batchService.getBatchByBatchNumber(batchNumber);
-        if (optionalBatch.isPresent()) {
-            BatchEntity batch = optionalBatch.get();
-            return ResponseEntity.ok().body(batch);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        BatchEntity batch = batchService.getBatchByBatchNumber(batchNumber);
+        return ResponseEntity.ok().body(batch);
     }
 
     @GetMapping("/search")

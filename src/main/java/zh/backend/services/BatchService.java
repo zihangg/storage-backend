@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import zh.backend.dtos.AssetBoxDto;
 import zh.backend.entities.BatchEntity;
 import zh.backend.entities.BoxEntity;
+import zh.backend.exceptions.BatchDoesNotExistException;
 import zh.backend.repositories.BatchRepository;
 import zh.backend.repositories.BoxesRepository;
 import zh.backend.utils.paging.Page;
@@ -55,8 +56,8 @@ public class BatchService implements Pageable<BatchEntity> {
         return batch;
     }
 
-    public Optional<BatchEntity> getBatchByBatchNumber(String batchNumber) {
-        return batchRepository.findByBatchNumber(batchNumber);
+    public BatchEntity getBatchByBatchNumber(String batchNumber) {
+        return batchRepository.findByBatchNumber(batchNumber).orElseThrow(BatchDoesNotExistException::new);
     }
 
     public Optional<List<BatchEntity>> getBatchByAssetCode(String assetCode) {

@@ -42,6 +42,17 @@ public class CustomControllerAdvice {
         return ResponseEntity.badRequest().body(err);
     }
 
+    @ExceptionHandler(BatchDoesNotExistException.class)
+    public ResponseEntity<CustomErrorResponse> handleBatchDoesNotExist(BatchDoesNotExistException e) {
+        e.printStackTrace();
+        CustomErrorResponse err = new CustomErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Batch does not exist."
+        );
+
+        return ResponseEntity.badRequest().body(err);
+    }
+
     @ExceptionHandler(IncorrectFromLocationException.class)
     public ResponseEntity<CustomErrorResponse> handleIncorrectFromLocation(IncorrectFromLocationException e) {
         e.printStackTrace();

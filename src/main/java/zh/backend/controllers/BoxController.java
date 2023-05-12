@@ -24,10 +24,20 @@ public class BoxController extends BaseController {
 
     @GetMapping
     public ResponseEntity<Page<BoxEntity>> getAllBoxes(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
-                                                       @RequestParam(name = "size", defaultValue = "10") int pageSize) {
+                                                       @RequestParam(name = "size", defaultValue = "10") int pageSize,
+                                                       @RequestParam String batchNumber) {
         PageRequest pageRequest = new PageRequest(pageNumber, pageSize);
-        int totalCount = boxService.getTotalCount();
-        Page<BoxEntity> batchList = boxService.getPage(pageRequest);
+        int totalCount;
+        Page<BoxEntity> batchList;
+
+        if (batchNumber == null) {
+            totalCount = boxService.getTotalCount();
+            batchList = boxService.getPage(pageRequest);
+        } else {
+            totalCount = boxService.getBatchBoxCount(batchNumber);
+            batchList = boxService.getBoxesByBatch(pageRequest, batchNumber);
+        }
+
         return ResponseEntity.ok().header("X-Total-Count", String.valueOf(totalCount)).body(batchList);
     }
 

@@ -13,4 +13,6 @@ public interface BoxesRepository extends JpaRepository<BoxEntity, String> {
     Optional<List<BoxEntity>> findByLocationCode(String locationCode);
 
     Optional<BoxEntity> findByBoxId(String boxId);
+
+    Optional<List<BoxEntity>> findByBatchNumber(String batchNumber);
 }

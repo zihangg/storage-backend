@@ -22,6 +22,7 @@ import java.util.Objects;
 public class BoxService implements Pageable<BoxEntity> {
     private final BoxesRepository boxesRepository;
     private final LocationService locationService;
+    private final BatchService batchService;
 
     public List<BoxEntity> getBoxesByAssetCode(String assetCode) {
         return boxesRepository.findByAssetCode(assetCode).orElseThrow();
@@ -51,6 +52,23 @@ public class BoxService implements Pageable<BoxEntity> {
         boxesRepository.save(box);
 
         return new GeneralActionResponse(true);
+    }
+
+
+    // TODO: fix the below redundancies.
+    public Page<BoxEntity> getBoxesByBatch(PageRequest pageRequest, String batchNumber) {
+        List<BoxEntity> items = boxesRepository.findByBatchNumber(batchNumber).orElseThrow(BoxDoesNotExistException::new);
+        int totalCount = items.size();
+        int offset = (pageRequest.getPageNumber() - 1) * pageRequest.getPageSize();
+        List<BoxEntity> content = items.subList(offset, Math.min(offset + pageRequest.getPageSize(), totalCount));
+        int totalPages = (int) Math.ceil((double) totalCount / pageRequest.getPageSize());
+
+        return new Page<>(content, pageRequest.getPageNumber(), totalPages);
+    }
+
+    public int getBatchBoxCount(String batchNumber) {
+        BatchEntity batch = batchService.getBatchByBatchNumber(batchNumber);
+        return batch.getBoxIds().size();
     }
 
     @Override
